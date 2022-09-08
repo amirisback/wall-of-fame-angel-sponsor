@@ -21,17 +21,17 @@
     </tr>
     <tr>
       <td align="center">
-        <a href="https://github.com/fiqryq">
+        <a align="center" href="https://github.com/fiqryq">
           <span align="center">Fiqry Choerudin</span>
         </a>  
       </td>
-      <td>
-        <a href="https://github.com/manyunyu7">
+      <td align="center">
+        <a align="center" href="https://github.com/manyunyu7">
           <span align="center">Henry Augusta</span>
         </a>
       </td>
       <td align="center">
-        <a href="https://github.com/andwip">
+        <a align="center" href="https://github.com/andwip">
           <span align="center">Andwi</span>
         </a>
       </td>
