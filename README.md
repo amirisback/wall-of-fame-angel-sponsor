@@ -38,6 +38,3 @@
     </tr>
     
 </table>
-
-## How To Join
-- Sponsor to me
