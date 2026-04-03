@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CMS - Wall of Fame Content Editor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset & Base ──────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --bg-primary: #0f0f1a;
+      --bg-secondary: #1a1a2e;
+      --bg-card: #16213e;
+      --bg-input: #0f3460;
+      --accent: #e94560;
+      --accent-hover: #ff6b81;
+      --accent-glow: rgba(233, 69, 96, 0.3);
+      --text-primary: #eaeaea;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6c6c8a;
+      --border: #2a2a4a;
+      --success: #00d2a0;
+      --success-glow: rgba(0, 210, 160, 0.3);
+      --warning: #ffa726;
+      --danger: #ef5350;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Scrollbar ──────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    /* ── Layout ──────────────────────────────────────── */
+    .cms-header {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+    }
+
+    .cms-header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cms-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cms-logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--accent), #533483);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 800; color: white;
+    }
+
+    .cms-logo h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .cms-logo h1 span {
+      color: var(--accent);
+    }
+
+    .cms-badge {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      background: var(--accent);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .cms-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .cms-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+    }
+
+    /* ── Section Cards ───────────────────────────────── */
+    .cms-section {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .cms-section:hover {
+      border-color: rgba(233, 69, 96, 0.3);
+    }
+
+    .cms-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition);
+    }
+
+    .cms-section-header:hover {
+      background: rgba(22, 33, 62, 0.8);
+    }
+
+    .cms-section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cms-section-title .icon {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    .cms-section-title h2 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .cms-section-title .count {
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--accent);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 4px;
+    }
+
+    .cms-section-toggle {
+      font-size: 20px;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .cms-section.collapsed .cms-section-body { display: none; }
+    .cms-section.collapsed .cms-section-toggle { transform: rotate(-90deg); }
+
+    .cms-section-body {
+      padding: 24px;
+    }
+
+    /* ── Form Controls ───────────────────────────────── */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 14px;
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ── Sponsor Cards ───────────────────────────────── */
+    .sponsor-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sponsor-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: var(--transition);
+      cursor: grab;
+      position: relative;
+    }
+
+    .sponsor-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .sponsor-card.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .sponsor-card.drag-over {
+      border-color: var(--success);
+      box-shadow: 0 0 0 3px var(--success-glow);
+    }
+
+    .sponsor-drag-handle {
+      color: var(--text-muted);
+      font-size: 18px;
+      cursor: grab;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    .sponsor-avatar {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      background: var(--bg-card);
+    }
+
+    .sponsor-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sponsor-info-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .sponsor-info input {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .sponsor-info input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    .sponsor-info label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+      display: block;
+    }
+
+    .sponsor-remove {
+      width: 36px; height: 36px;
+      border: none;
+      background: rgba(239, 83, 80, 0.1);
+      color: var(--danger);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .sponsor-remove:hover {
+      background: var(--danger);
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .sponsor-index {
+      width: 28px; height: 28px;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── Buttons ──────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #c0392b);
+      color: white;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px var(--accent-glow);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success), #00b894);
+      color: white;
+      box-shadow: 0 4px 16px var(--success-glow);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px var(--success-glow);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(233, 69, 96, 0.05);
+    }
+
+    .btn-ghost {
+      background: rgba(233, 69, 96, 0.1);
+      color: var(--accent);
+      border: 1px dashed var(--accent);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(233, 69, 96, 0.15);
+    }
+
+    .btn-add-sponsor {
+      width: 100%;
+      padding: 14px;
+      justify-content: center;
+      margin-top: 12px;
+    }
+
+    /* ── Preview Panel ───────────────────────────────── */
+    .preview-bar {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .preview-bar-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .preview-bar-info .dot {
+      width: 8px; height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .preview-bar-info span {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ── JSON Preview Modal ──────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 700px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      width: 32px; height: 32px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .modal-body pre {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-x: auto;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* ── Toast ──────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--success);
+      border-radius: var(--radius-sm);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--success);
+      box-shadow: 0 8px 32px rgba(0, 210, 160, 0.2);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: var(--transition);
+      z-index: 2000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* ── Fetch By Username ──────────────────────────── */
+    .quick-add {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .quick-add h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .quick-add-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .quick-add-row input {
+      flex: 1;
+      padding: 10px 14px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .quick-add-row input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid transparent;
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Responsive ──────────────────────────────────── */
+    @media (max-width: 768px) {
+      .form-row, .sponsor-info-row {
+        grid-template-columns: 1fr;
+      }
+      .cms-header-inner {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .cms-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────────────── -->
+  <header class="cms-header">
+    <div class="cms-header-inner">
+      <div class="cms-logo">
+        <div class="cms-logo-icon">W</div>
+        <h1>Content <span>Editor</span></h1>
+        <span class="cms-badge">Dev Only</span>
+      </div>
+      <div class="cms-actions">
+        <button class="btn btn-outline" onclick="previewJSON()">👁 Preview JSON</button>
+        <button class="btn btn-success" id="btn-save" onclick="saveJSON()">💾 Save content.json</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="cms-container">
+
+    <!-- ── Status Bar ────────────────────────────────── -->
+    <div class="preview-bar">
+      <div class="preview-bar-info">
+        <div class="dot"></div>
+        <span>Editing <strong>data/content.json</strong> — auto-save langsung ke file</span>
+      </div>
+      <a href="index.html" target="_blank" class="btn btn-outline" style="padding: 6px 14px; font-size: 12px;">↗ Open Website</a>
+    </div>
+
+    <!-- ── Site Section ──────────────────────────────── -->
+    <div class="cms-section" id="section-site">
+      <div class="cms-section-header" onclick="toggleSection('section-site')">
+        <div class="cms-section-title">
+          <div class="icon" style="background: rgba(233,69,96,0.15); color: var(--accent);">🌐</div>
+          <h2>Site Settings</h2>
+        </div>
+        <div class="cms-section-toggle">▾</div>
+      </div>
+      <div class="cms-section-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Page Title</label>
+            <input type="text" class="form-input" id="site-title" placeholder="Website title...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Brand Name</label>
+            <input type="text" class="form-input" id="site-brandName" placeholder="Brand name in header...">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Banner Section ────────────────────────────── -->
+    <div class="cms-section" id="section-banner">
+      <div class="cms-section-header" onclick="toggleSection('section-banner')">
+        <div class="cms-section-title">
+          <div class="icon" style="background: rgba(108,92,231,0.15); color: #6c5ce7;">🎯</div>
+          <h2>Banner / Hero</h2>
+        </div>
+        <div class="cms-section-toggle">▾</div>
+      </div>
+      <div class="cms-section-body">
+        <div class="form-group">
+          <label class="form-label">Subtitle</label>
+          <input type="text" class="form-input" id="banner-subtitle" placeholder="e.g. Welcome To Wall Of Fame">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Title (HTML)</label>
+          <input type="text" class="form-input" id="banner-title" placeholder="Supports <em> tags for emphasis...">
+          <span class="form-hint">Wrap text in &lt;em&gt;...&lt;/em&gt; for accent color</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Button Text</label>
+            <input type="text" class="form-input" id="banner-buttonText" placeholder="Sponsor Now">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Button URL</label>
+            <input type="url" class="form-input" id="banner-buttonUrl" placeholder="https://...">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Sponsors Section ──────────────────────────── -->
+    <div class="cms-section" id="section-sponsors">
+      <div class="cms-section-header" onclick="toggleSection('section-sponsors')">
+        <div class="cms-section-title">
+          <div class="icon" style="background: rgba(0,210,160,0.15); color: var(--success);">⭐</div>
+          <h2>Sponsors</h2>
+          <span class="count" id="sponsor-count">0</span>
+        </div>
+        <div class="cms-section-toggle">▾</div>
+      </div>
+      <div class="cms-section-body">
+        <div class="form-group">
+          <label class="form-label">Section Title (HTML)</label>
+          <input type="text" class="form-input" id="sponsors-sectionTitle" placeholder="Latest Angel Sponsor Right Now">
+        </div>
+
+        <div class="form-row" style="margin-bottom: 20px;">
+          <div class="form-group">
+            <label class="form-label">CTA Button Text</label>
+            <input type="text" class="form-input" id="sponsors-ctaButtonText" placeholder="Visit Github Profile">
+          </div>
+          <div class="form-group">
+            <label class="form-label">CTA Button URL</label>
+            <input type="url" class="form-input" id="sponsors-ctaButtonUrl" placeholder="https://...">
+          </div>
+        </div>
+
+        <!-- Quick Add by GitHub username -->
+        <div class="quick-add">
+          <h4>⚡ Quick Add — Fetch from GitHub</h4>
+          <div class="quick-add-row">
+            <input type="text" id="github-username" placeholder="Enter GitHub username..." onkeydown="if(event.key==='Enter')fetchGitHubUser()">
+            <button class="btn btn-primary" id="btn-fetch" onclick="fetchGitHubUser()">Fetch & Add</button>
+          </div>
+        </div>
+
+        <div class="sponsor-list" id="sponsor-list">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <button class="btn btn-ghost btn-add-sponsor" onclick="addSponsor()">+ Add Sponsor Manually</button>
+      </div>
+    </div>
+
+    <!-- ── Footer Section ────────────────────────────── -->
+    <div class="cms-section" id="section-footer">
+      <div class="cms-section-header" onclick="toggleSection('section-footer')">
+        <div class="cms-section-title">
+          <div class="icon" style="background: rgba(255,167,38,0.15); color: var(--warning);">📝</div>
+          <h2>Footer</h2>
+        </div>
+        <div class="cms-section-toggle">▾</div>
+      </div>
+      <div class="cms-section-body">
+        <div class="form-group">
+          <label class="form-label">Copyright (HTML)</label>
+          <input type="text" class="form-input" id="footer-copyright" placeholder="Copyright © 2026 ...">
+          <span class="form-hint">Supports HTML — e.g. &lt;a href="..."&gt;Name&lt;/a&gt;</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── JSON Preview Modal ──────────────────────────── -->
+  <div class="modal-overlay" id="json-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📄 content.json Preview</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <pre id="json-preview"></pre>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="copyJSON()">📋 Copy to Clipboard</button>
+        <button class="btn btn-success" onclick="saveJSON(); closeModal();">💾 Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast ───────────────────────────────────────── -->
+  <div class="toast" id="toast">
+    <span>✓</span>
+    <span id="toast-msg">Saved!</span>
+  </div>
+
+  <script>
+    /* ── State ──────────────────────────────────────────── */
+    let contentData = null;
+    let dragSrcIndex = null;
+
+    /* ── Init ──────────────────────────────────────────── */
+    document.addEventListener('DOMContentLoaded', loadContent);
+
+    async function loadContent() {
+      try {
+        const resp = await fetch('data/content.json');
+        contentData = await resp.json();
+        populateFields();
+      } catch (e) {
+        console.error('Could not load content.json', e);
+        // Init with defaults
+        contentData = {
+          site: { title: '', brandName: '' },
+          banner: { subtitle: '', title: '', buttonText: '', buttonUrl: '' },
+          sponsors: { sectionTitle: '', list: [], ctaButtonText: '', ctaButtonUrl: '' },
+          footer: { copyright: '' }
+        };
+        populateFields();
+      }
+    }
+
+    function populateFields() {
+      // Site
+      document.getElementById('site-title').value = contentData.site.title || '';
+      document.getElementById('site-brandName').value = contentData.site.brandName || '';
+
+      // Banner
+      document.getElementById('banner-subtitle').value = contentData.banner.subtitle || '';
+      document.getElementById('banner-title').value = contentData.banner.title || '';
+      document.getElementById('banner-buttonText').value = contentData.banner.buttonText || '';
+      document.getElementById('banner-buttonUrl').value = contentData.banner.buttonUrl || '';
+
+      // Sponsors meta
+      document.getElementById('sponsors-sectionTitle').value = contentData.sponsors.sectionTitle || '';
+      document.getElementById('sponsors-ctaButtonText').value = contentData.sponsors.ctaButtonText || '';
+      document.getElementById('sponsors-ctaButtonUrl').value = contentData.sponsors.ctaButtonUrl || '';
+
+      // Footer
+      document.getElementById('footer-copyright').value = contentData.footer.copyright || '';
+
+      renderSponsorList();
+    }
+
+    /* ── Collect form data → JSON ───────────────────────── */
+    function collectData() {
+      const sponsors = [];
+      const cards = document.querySelectorAll('.sponsor-card');
+      cards.forEach(card => {
+        sponsors.push({
+          name: card.querySelector('[data-field="name"]').value,
+          username: card.querySelector('[data-field="username"]').value,
+          url: card.querySelector('[data-field="url"]').value,
+          avatar: card.querySelector('[data-field="avatar"]').value
+        });
+      });
+
+      return {
+        site: {
+          title: document.getElementById('site-title').value,
+          brandName: document.getElementById('site-brandName').value
+        },
+        banner: {
+          subtitle: document.getElementById('banner-subtitle').value,
+          title: document.getElementById('banner-title').value,
+          buttonText: document.getElementById('banner-buttonText').value,
+          buttonUrl: document.getElementById('banner-buttonUrl').value
+        },
+        sponsors: {
+          sectionTitle: document.getElementById('sponsors-sectionTitle').value,
+          list: sponsors,
+          ctaButtonText: document.getElementById('sponsors-ctaButtonText').value,
+          ctaButtonUrl: document.getElementById('sponsors-ctaButtonUrl').value
+        },
+        footer: {
+          copyright: document.getElementById('footer-copyright').value
+        }
+      };
+    }
+
+    /* ── Render Sponsor Cards ──────────────────────────── */
+    function renderSponsorList() {
+      const list = document.getElementById('sponsor-list');
+      list.innerHTML = '';
+      const sponsors = contentData.sponsors.list || [];
+
+      sponsors.forEach((s, i) => {
+        const card = document.createElement('div');
+        card.className = 'sponsor-card';
+        card.draggable = true;
+        card.dataset.index = i;
+        card.innerHTML = `
+          <span class="sponsor-drag-handle" title="Drag to reorder">⠿</span>
+          <span class="sponsor-index">${i + 1}</span>
+          <img class="sponsor-avatar" src="${escapeAttr(s.avatar)}" alt="${escapeAttr(s.name)}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%231a1a2e%22 width=%22100%22 height=%22100%22/><text fill=%22%236c6c8a%22 x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2240%22>?</text></svg>'">
+          <div class="sponsor-info">
+            <div class="sponsor-info-row">
+              <div><label>Name</label><input data-field="name" value="${escapeAttr(s.name)}" placeholder="Full name"></div>
+              <div><label>Username</label><input data-field="username" value="${escapeAttr(s.username)}" placeholder="GitHub username"></div>
+            </div>
+            <div class="sponsor-info-row" style="margin-top:8px">
+              <div><label>URL</label><input data-field="url" value="${escapeAttr(s.url)}" placeholder="https://github.com/..."></div>
+              <div><label>Avatar URL</label><input data-field="avatar" value="${escapeAttr(s.avatar)}" placeholder="https://avatars.githubusercontent.com/..." oninput="updateAvatarPreview(this)"></div>
+            </div>
+          </div>
+          <button class="sponsor-remove" title="Remove sponsor" onclick="removeSponsor(${i})">✕</button>
+        `;
+
+        // Drag & drop events
+        card.addEventListener('dragstart', onDragStart);
+        card.addEventListener('dragover', onDragOver);
+        card.addEventListener('dragleave', onDragLeave);
+        card.addEventListener('drop', onDrop);
+        card.addEventListener('dragend', onDragEnd);
+
+        list.appendChild(card);
+      });
+
+      document.getElementById('sponsor-count').textContent = sponsors.length;
+    }
+
+    function escapeAttr(str) {
+      return (str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function updateAvatarPreview(input) {
+      const img = input.closest('.sponsor-card').querySelector('.sponsor-avatar');
+      img.src = input.value;
+    }
+
+    /* ── Sponsor CRUD ──────────────────────────────────── */
+    function addSponsor(data) {
+      const newSponsor = data || { name: '', username: '', url: '', avatar: '' };
+      // Sync current form state first
+      contentData = collectData();
+      contentData.sponsors.list.push(newSponsor);
+      renderSponsorList();
+      // Scroll to bottom
+      const lastCard = document.querySelector('.sponsor-card:last-child');
+      if (lastCard) lastCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function removeSponsor(index) {
+      if (!confirm('Remove this sponsor?')) return;
+      contentData = collectData();
+      contentData.sponsors.list.splice(index, 1);
+      renderSponsorList();
+    }
+
+    /* ── Drag & Drop Reorder ──────────────────────────── */
+    function onDragStart(e) {
+      dragSrcIndex = parseInt(e.currentTarget.dataset.index);
+      e.currentTarget.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function onDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      e.currentTarget.classList.add('drag-over');
+    }
+
+    function onDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+
+    function onDrop(e) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      const dragDstIndex = parseInt(e.currentTarget.dataset.index);
+      if (dragSrcIndex === dragDstIndex) return;
+
+      contentData = collectData();
+      const list = contentData.sponsors.list;
+      const [moved] = list.splice(dragSrcIndex, 1);
+      list.splice(dragDstIndex, 0, moved);
+      renderSponsorList();
+    }
+
+    function onDragEnd(e) {
+      e.currentTarget.classList.remove('dragging');
+      document.querySelectorAll('.sponsor-card').forEach(c => c.classList.remove('drag-over'));
+    }
+
+    /* ── GitHub API Fetch ─────────────────────────────── */
+    async function fetchGitHubUser() {
+      const input = document.getElementById('github-username');
+      const btn = document.getElementById('btn-fetch');
+      const username = input.value.trim();
+      if (!username) return;
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Fetching...';
+
+      try {
+        const resp = await fetch(`https://api.github.com/users/${username}`);
+        if (!resp.ok) throw new Error('User not found');
+        const user = await resp.json();
+        addSponsor({
+          name: user.name || user.login,
+          username: user.login,
+          url: user.html_url,
+          avatar: user.avatar_url
+        });
+        input.value = '';
+        showToast(`✓ Added ${user.name || user.login}`);
+      } catch (err) {
+        showToast(`✕ Error: ${err.message}`, true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Fetch & Add';
+      }
+    }
+
+    /* ── Section Toggle ───────────────────────────────── */
+    function toggleSection(id) {
+      document.getElementById(id).classList.toggle('collapsed');
+    }
+
+    /* ── JSON Output ──────────────────────────────────── */
+    function getJSONString() {
+      return JSON.stringify(collectData(), null, 2);
+    }
+
+    function previewJSON() {
+      document.getElementById('json-preview').textContent = getJSONString();
+      document.getElementById('json-modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('json-modal').classList.remove('active');
+    }
+
+    function copyJSON() {
+      navigator.clipboard.writeText(getJSONString()).then(() => {
+        showToast('Copied to clipboard!');
+      });
+    }
+
+    async function saveJSON() {
+      const btn = document.getElementById('btn-save');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Saving...';
+
+      try {
+        const resp = await fetch('/api/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: getJSONString()
+        });
+        const result = await resp.json();
+        if (result.ok) {
+          showToast('✓ Saved to data/content.json!');
+        } else {
+          throw new Error(result.message);
+        }
+      } catch (err) {
+        showToast('✕ Save failed: ' + err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '💾 Save content.json';
+      }
+    }
+
+    /* ── Toast ──────────────────────────────────────── */
+    function showToast(msg, isError) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      toastMsg.textContent = msg;
+      toast.style.borderColor = isError ? 'var(--danger)' : 'var(--success)';
+      toast.style.color = isError ? 'var(--danger)' : 'var(--success)';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    /* ── Close modal on ESC / backdrop ────────────────── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+    document.getElementById('json-modal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+  </script>
+</body>
+</html>

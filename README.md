@@ -1,3 +1,8 @@
+## Run Dev 
+```bash
+node server.js
+```
+
 ## Wall of Fame
 - Wall of Fame human kinds, who sponsored me
 
@@ -28,6 +33,11 @@
           <img aling="center" src="https://avatars.githubusercontent.com/u/87845739?v=4" width="100px;" alt=""/>
         </a>
       </td>
+      <td align="center">
+        <a align="center" href="https://github.com/donnysashari">
+          <img aling="center" src="https://avatars.githubusercontent.com/u/38690682?v=4" width="100px;" alt=""/>
+        </a>
+      </td>
     </tr>
     <tr>
       <td align="center">
@@ -55,6 +65,16 @@
           <span align="center">IncentApp</span>
         </a>
       </td>
+      <td align="center">
+        <a align="center" href="https://github.com/donnysashari">
+          <span align="center">Donny Sabri Ashari</span>
+        </a>
+      </td>
     </tr>
     
 </table>
+
+
+## Attention !!!
+- Please enjoy and don't forget fork and give a star
+- Don't Forget Follow My Github Account
