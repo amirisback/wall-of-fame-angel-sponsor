@@ -1,0 +1,58 @@
+{
+  "site": {
+    "title": "Wall of Fame Angel Sponsor (amirisback)",
+    "brandName": "AMIRISBACK"
+  },
+  "banner": {
+    "subtitle": "Welcome To Wall Of Fame",
+    "title": "Let's Become Our <em>Angel Sponsor</em> Here",
+    "buttonText": "Sponsor Now",
+    "buttonUrl": "https://github.com/sponsors/amirisback"
+  },
+  "sponsors": {
+    "sectionTitle": "Latest <em>Angel Sponsor</em> Right Now",
+    "list": [
+      {
+        "name": "Fiqry Choerudin",
+        "username": "fiqryq",
+        "url": "https://github.com/fiqryq",
+        "avatar": "https://avatars.githubusercontent.com/u/25787603?v=4"
+      },
+      {
+        "name": "Henry Augusta",
+        "username": "manyunyu7",
+        "url": "https://github.com/manyunyu7",
+        "avatar": "https://avatars.githubusercontent.com/u/58649545?v=4"
+      },
+      {
+        "name": "Andwi",
+        "username": "andwip",
+        "url": "https://github.com/andwip",
+        "avatar": "https://avatars.githubusercontent.com/u/49425427?v=4"
+      },
+      {
+        "name": "Tengku Belmiro",
+        "username": "castariva18",
+        "url": "https://github.com/castariva18",
+        "avatar": "https://avatars.githubusercontent.com/u/37837588?v=4"
+      },
+      {
+        "name": "IncentApp",
+        "username": "IncentApp",
+        "url": "https://github.com/IncentApp",
+        "avatar": "https://avatars.githubusercontent.com/u/87845739?v=4"
+      },
+      {
+        "name": "Donny Sabri Ashari",
+        "username": "donnysashari",
+        "url": "https://github.com/donnysashari",
+        "avatar": "https://avatars.githubusercontent.com/u/38690682?v=4"
+      }
+    ],
+    "ctaButtonText": "Visit Amir's Github Profile",
+    "ctaButtonUrl": "https://github.com/amirisback"
+  },
+  "footer": {
+    "copyright": "Copyright © 2026 <a href=\"https://github.com/amirisback\">Muhammad Faisal Amir</a> All rights reserved."
+  }
+}
